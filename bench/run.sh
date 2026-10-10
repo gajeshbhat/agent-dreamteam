@@ -13,7 +13,7 @@ for id in "${ids[@]}"; do
   # a full swap stalls everything and corrupts timings (seen: all runs hung); refuse to continue
   [ "$(swap_pct)" -ge "${BENCH_SWAP_LIMIT:-90}" ] && { echo "ABORT: swap at $(swap_pct)% (limit ${BENCH_SWAP_LIMIT:-90}%)" >&2; exit 3; }
   t="$root/bench/tasks/$id"; w="$root/runs/bench/$run/$seat/$id"
-  rm -rf "$w"; mkdir -p "$w"; cp "$t/check.py" "$w/"; chmod 444 "$w/check.py"
+  rm -rf "$w"; mkdir -p "$w"; cp "$t/check.py" "$root/bench/rpc.py" "$w/"; chmod 444 "$w/check.py" "$w/rpc.py"
   task="Work in $w (cd there first). Write the whole file $w/solution.py. Do not edit check.py. $(cat "$t/prompt.txt")
 Done means: cd $w && python3 check.py prints OK."
   s=$(date +%s)

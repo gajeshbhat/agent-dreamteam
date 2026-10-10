@@ -243,14 +243,16 @@ for id, t in T.items():
     open(f"{d}/prompt.txt", "w").write(t["prompt"] + "\n")
     body = textwrap.indent(t["check"], "    ")
     chk = ("import os, sys\n\n\ndef _main():\n"
-           "    # read and delete the nonce BEFORE the untrusted solution is imported\n"
+           "    # nonce is read and deleted here, in the trusted process; the solution runs in a child\n"
            "    nf = os.environ.get('CHECK_NONCE_FILE'); nonce = ''\n"
            "    if nf and os.path.exists(nf):\n"
            "        nonce = open(nf).read().strip(); os.unlink(nf)\n"
-           "    sys.path.insert(0, '.')\n"
-           f"    from solution import {t['fn']}\n"
-           + GUARD.replace("WRAP", CLS if t["fn"][0].isupper() else FUN).replace("FN", t["fn"]) +
-           f"\n{body}\n"
+           "    here = os.path.dirname(os.path.abspath(__file__))\n"
+           "    for d in (here, os.path.join(here, '..', '..')):\n"
+           "        sys.path.insert(0, d)\n"
+           "    import rpc\n"
+           f"    {t['fn']} = rpc.load('solution', '{t['fn']}', cls={t['fn'][0].isupper()})\n\n"
+           f"{body}\n"
            "    print('OK' + (' ' + nonce if nonce else ''))\n\n\n_main()\n")
     tmp = f"{d}/check.py.new"; open(tmp, "w").write(chk); os.replace(tmp, f"{d}/check.py")
     open(f"{d}/ref.py", "w").write(t["ref"] + "\n")

@@ -17,6 +17,20 @@ printf "print('OK', flush=True)\nimport os\nos._exit(0)\n" > "$w/solution.py"
 # a solution that reads the nonce file named in the environment must NOT pass either
 printf "import os\nn=open(os.environ['CHECK_NONCE_FILE']).read().strip()\nprint('OK '+n, flush=True)\nos._exit(0)\n" > "$w/solution.py"
 "$root/bench/grade.sh" "$t" "$w" >/dev/null 2>&1 && { echo "FAIL nonce reader passes grading"; bad=1; } || echo "ok   nonce reader is rejected"
+# a solution that walks the caller's stack frames to steal the nonce must NOT pass
+cat > "$w/solution.py" <<'PY'
+import sys, os
+def _find():
+    f = sys._getframe(1)
+    while f:
+        v = f.f_locals.get('nonce')
+        if v: return v
+        f = f.f_back
+print('OK ' + (_find() or ''), flush=True)
+os._exit(0)
+PY
+"$root/bench/grade.sh" "$t" "$w" >/dev/null 2>&1 && { echo "FAIL frame inspector passes grading"; bad=1; } || echo "ok   frame inspector is rejected"
+
 # a solution whose results compare equal to everything must NOT pass
 cat > "$w/solution.py" <<'PY'
 class _Any:
