@@ -76,3 +76,14 @@ were graded by a check the worker had overwritten; those results were discarded)
   constraint. The break-even task size is not measured yet.
 - Caveats: one run per cell; small, well-specified Python tasks; notional cost is Claude's
   own `total_cost_usd`, not what a Pro plan is charged.
+
+## Known limits of the harness (from review)
+
+- Headless control: an allowlist entry for an interpreter (`Bash(python3:*)`) is not a
+  sandbox, since `python3 -c` can do anything; this was reproduced (it read /etc/hosts).
+  The control now allows only `python3 check.py`. The agent's own `solution.py` still runs
+  unsandboxed when the check runs, which is inherent to running generated code.
+- Grader nonce: `check.py` keeps the nonce in a local variable while the untrusted solution
+  is imported, so a solution that inspects the caller's stack frames can read it. Removing
+  that needs the asserts to run in a parent process; not done because the workers are
+  cooperative, not adversarial.

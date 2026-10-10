@@ -1,5 +1,8 @@
 #!/usr/bin/env bash
 # Control: the same tasks, same briefs, done by a headless Claude with no workers.
+# shortcut: only `python3 check.py` is allowed, not python3 in general (python3 -c escapes any
+# allowlist), but the agent-written solution.py still runs unsandboxed when the check runs;
+# wrap in sandbox-exec if the agent is ever not trusted.
 # usage: bench/claude-alone.sh <run-id> [task-id ...]   (env CLAUDE_MODEL, default claude-sonnet-5-5)
 set -uo pipefail
 root=$(cd "$(dirname "$0")/.." && pwd)
@@ -17,7 +20,7 @@ Done means: cd $w && python3 check.py prints OK."
   (cd "$w" && claude -p "$task" --model "$model" --output-format json --no-session-persistence \
       --setting-sources project --disable-slash-commands --strict-mcp-config \
       --permission-mode acceptEdits \
-      --allowedTools "Bash(python3:*)" "Bash(cd:*)" --disallowedTools "WebFetch" "WebSearch" "Bash(rm:*)" "Bash(curl:*)" "Bash(sh:*)" "Bash(bash:*)" \
+      --allowedTools "Bash(python3 check.py)" "Bash(cd:*)" --disallowedTools "WebFetch" "WebSearch" "Bash(rm:*)" "Bash(curl:*)" "Bash(sh:*)" "Bash(bash:*)" \
       --max-turns 15 </dev/null) > "$raw/$id.json" 2>"$raw/$id.err"
   secs=$(( $(date +%s) - s ))
   "$root/bench/grade.sh" "$t" "$w" && pass=true || pass=false
