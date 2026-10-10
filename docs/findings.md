@@ -83,7 +83,9 @@ were graded by a check the worker had overwritten; those results were discarded)
   sandbox, since `python3 -c` can do anything; this was reproduced (it read /etc/hosts).
   The control now allows only `python3 check.py`. The agent's own `solution.py` still runs
   unsandboxed when the check runs, which is inherent to running generated code.
-- Grader nonce: `check.py` keeps the nonce in a local variable while the untrusted solution
-  is imported, so a solution that inspects the caller's stack frames can read it. Removing
-  that needs the asserts to run in a parent process; not done because the workers are
-  cooperative, not adversarial.
+- Grader isolation: `check.py` runs in a trusted parent that holds the nonce; the untrusted
+  solution is imported only in a child process with a scrubbed environment (`bench/rpc.py`),
+  which returns plain JSON values. Cheats covered by `bench/selftest.sh`: print OK and exit,
+  read the nonce file, walk stack frames, always-equal results, hang. An agent-written
+  solution still executes unsandboxed on this machine when checked (inherent; use
+  `sandbox-exec` if the agent is ever untrusted).
