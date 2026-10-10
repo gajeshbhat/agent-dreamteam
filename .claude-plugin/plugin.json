@@ -1,0 +1,6 @@
+{
+  "name": "dreamteam",
+  "version": "0.1.0",
+  "description": "Delegate bounded work to local open-model pi workers (Ollama) through OpenRig, with evidence checks and telemetry.",
+  "author": { "name": "Gajesh Bhat" }
+}

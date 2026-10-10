@@ -1,0 +1,39 @@
+version: "0.2"
+name: workers
+summary: Local open-model workers for a Claude Code boss session (attached, not a seat here).
+
+pods:
+  - id: builders
+    label: Builders
+    members:
+      - id: pi-1
+        agent_ref: "local:agents/builder"
+        profile: default
+        runtime: pi
+        model: ollama/qwen3-coder-32k
+        cwd: "workspace"
+      - id: pi-2
+        agent_ref: "local:agents/builder"
+        profile: default
+        runtime: pi
+        model: ollama/qwen3-coder-32k
+        cwd: "workspace"
+    edges: []
+
+  - id: thinker
+    label: Thinker
+    members:
+      - id: pi
+        agent_ref: "local:agents/thinker"
+        profile: default
+        runtime: pi
+        model: ollama/devstral-32k
+        cwd: "workspace"
+        startup:
+          actions:
+            - type: send_text
+              value: "You are the thinker: plan, review and diagnose using real tool calls. Do not write features unless asked. Always paste the commands you ran and their output."
+              idempotent: true
+    edges: []
+
+edges: []

@@ -1,0 +1,71 @@
+version: "0.2"
+name: dreamteam
+summary: Claude Code leads; open models on Ollama build and review.
+
+pods:
+  - id: lead
+    label: Lead
+    members:
+      - id: claude
+        agent_ref: "local:agents/lead"
+        profile: default
+        runtime: claude-code
+        cwd: "workspace"
+    edges: []
+
+  - id: builders
+    label: Builders
+    members:
+      - id: pi-1
+        agent_ref: "local:agents/builder"
+        profile: default
+        runtime: pi
+        model: ollama/qwen3-coder-32k
+        cwd: "workspace"
+      - id: pi-2
+        agent_ref: "local:agents/builder"
+        profile: default
+        runtime: pi
+        model: ollama/qwen3-coder-32k
+        cwd: "workspace"
+      - id: opencode
+        agent_ref: "builtin:terminal"
+        profile: none
+        runtime: terminal
+        cwd: "workspace"
+        startup:
+          actions:
+            - type: send_text
+              value: "XDG_STATE_HOME=$HOME/.openrig/state/opencode-seat OPENCODE_CONFIG=$PWD/../../configs/opencode.json opencode --standalone"
+              idempotent: true
+    edges: []
+
+  - id: review
+    label: Review
+    members:
+      - id: pi
+        agent_ref: "local:agents/reviewer"
+        profile: default
+        runtime: pi
+        model: ollama/qwen3-coder-32k
+        cwd: "workspace"
+        startup:
+          actions:
+            - type: send_text
+              value: "You are the reviewer. Review changes made by the builders for bugs and missing tests. Do not write features."
+              idempotent: true
+    edges: []
+
+edges:
+  - kind: delegates_to
+    from: lead.claude
+    to: builders.pi-1
+  - kind: delegates_to
+    from: lead.claude
+    to: builders.pi-2
+  - kind: delegates_to
+    from: lead.claude
+    to: builders.opencode
+  - kind: escalates_to
+    from: review.pi
+    to: lead.claude

@@ -1,0 +1,1 @@
+Implement slugify(text) in solution.py: lowercase; every run of non-alphanumeric characters becomes one '-'; strip leading and trailing '-'.

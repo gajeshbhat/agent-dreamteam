@@ -1,0 +1,1 @@
+Implement parse_duration(s) in solution.py returning total seconds as an int. s is a sequence of <integer><unit> parts with units d (86400), h (3600), m (60), s (1), e.g. '1h30m' = 5400, '2d' = 172800, '90m' = 5400, '1h1m1s' = 3661. Raise ValueError for an empty string, an unknown unit, a missing number, or trailing characters (e.g. '5x', 'h', '10', '1h 30m').

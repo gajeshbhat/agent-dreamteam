@@ -1,0 +1,1 @@
+Implement wrap(text, width) in solution.py returning a list of lines. Split text on whitespace; greedily pack words onto lines separated by single spaces so no line is longer than width. A word longer than width goes on its own line unbroken. Empty or whitespace-only text gives [].

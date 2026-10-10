@@ -1,0 +1,3 @@
+rigs/workspace/*
+!rigs/workspace/.gitkeep
+runs/
