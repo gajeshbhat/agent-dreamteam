@@ -1,5 +1,7 @@
 # agent-dreamteam
 
+![license](https://img.shields.io/badge/license-MIT-blue) ![status](https://img.shields.io/badge/status-experiment-lightgrey)
+
 Experiment: Claude Code as the boss, local open-model [pi](https://pi.dev) workers (Ollama,
 orchestrated by OpenRig) doing the bounded work it hands over.
 
@@ -33,3 +35,7 @@ unattended batches, offline) is untested.
 
 Limits worth knowing: one 32k-context slot of qwen3-coder is 21 GB, a second slot pushed a
 32 GB Mac into swap and wedged Ollama. `bench/run.sh` aborts above 90% swap.
+
+## License
+
+MIT, see [LICENSE](LICENSE).

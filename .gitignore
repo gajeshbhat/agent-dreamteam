@@ -1,3 +1,5 @@
 rigs/workspace/*
 !rigs/workspace/.gitkeep
 runs/
+__pycache__/
+*.pyc
